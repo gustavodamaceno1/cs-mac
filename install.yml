@@ -1,0 +1,69 @@
+---
+- hosts: localhost
+
+  tasks:
+    - name: install homebrew_taps
+      homebrew_tap: tap={{item}} state=present
+      with_items:
+          - homebrew/dupes
+          - caskroom/cask
+          - caskroom/versions
+          - homebrew/core
+
+    - name: install apps from homebrew
+      sudo: false
+      homebrew: name={{item}} state=present update_homebrew=yes
+      with_items:
+          - coreutils
+          - git
+          - wget
+          - rbenv
+          - ruby
+          - brew-cask-completion
+          - openssl
+          - curl
+          - nodejs
+          - autoconf
+          - pkg-config
+          - docker
+          - boot2docker
+          - ruby-build
+          - ios-deploy
+          - cocoapods
+          - calabash
+
+    # requires node/npm from above
+    - name: install node
+      homebrew: name=node state=latest
+
+    - name: install npm
+      homebrew: name=npm state=latest
+
+    - name: install gems
+      gem: name={{item}} state=latest
+      with_items:
+          - brewbygems
+          - bundler
+
+    - name: print from playbook
+      homebrew_cask:
+        name: "{{item}}"
+        state: present
+      with_items:
+      - atom
+      - google-chrome
+      - firefox
+      - iterm2
+      - java
+      - vagrant
+      - virtualbox
+      - postman
+      - java
+      - java7
+      - android-studio
+      - sublime-text2
+      - slack
+      - genymotion
+      
+    - name: Cleanup
+      shell: brew cleanup && brew cask cleanup 
